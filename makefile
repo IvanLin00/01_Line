@@ -19,4 +19,6 @@ display.o: display.c display.h ml6.h
 
 
 clean:
+	rm *.png
+	rm *.ppm
 	rm *.o *~
