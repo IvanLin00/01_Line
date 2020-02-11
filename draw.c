@@ -7,6 +7,9 @@
 
 //Insert your line algorithm here
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
+  if(x0 > x1){
+    draw_line(x1,y1,x0,y0,s,c);
+  }
   if(x0 == x1){
     vertical(x0, y0, x1, y1, s, c);
     return;
@@ -17,20 +20,40 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
   else horizontal(x0, y0, x1, y1, s, c);
 }
 
-void right(int x0, int y0, int x1, int y1, screen s, color c){
-  return;
+void right(int startx, int starty, int endx, int endy, screen s, color c){
+  int a = endy - starty;
+  int b = endx - startx;
+  int d = a + 2 * b;
+  if(b < (-1 * a)){
+    while (starty > endy){
+      plot(s, c, startx, starty);
+      if(d > 0){
+        startx++;
+        d += 2 * a;
+      }
+      starty--;
+      d += 2 * b;
+    }
+  }
+  else{
+    d = 2 * a + b;
+    while(startx < endx){
+      plot(s, c, startx, starty);
+      if(d < 0){
+        starty--;
+        d += 2 * b;
+      }
+      startx++;
+      d += 2 * a;
+    }
+  }
 }
 
-void left(int x0, int y0, int x1, int y1, screen s, color c){
-  int startx = min_coor(x0,x1);
-  int starty = min_coor(y0,y1);
-  int endx = max_coor(x0,x1);
-  int endy = max_coor(y0,y1);
+void left(int startx, int starty, int endx, int endy, screen s, color c){
   int a = endy - starty;
   int b = -1 * (endx - startx);
-  int d = 2 * a + b;
-  float m = (a + 0.0) / b * -1;
-  if(m > 1){ //2nd octant works
+  int d = 2 * a - b;
+  if(a > (-1 * b)){ //2nd octant works
     while(startx <  endx){
       plot(s, c, startx, starty);
       if(d < 0){
@@ -41,7 +64,8 @@ void left(int x0, int y0, int x1, int y1, screen s, color c){
       d += 2 * b;
     }
   }
-  else{//1st octant doesn't work
+  else{//1st octant works 5th doesn't i think
+    d = 2 * a + b;
     while(startx < endx){
       plot(s, c, startx, starty);
       if(d > 0){
@@ -54,21 +78,17 @@ void left(int x0, int y0, int x1, int y1, screen s, color c){
   }
 }
 
-void horizontal(int x0, int y0, int x1, int y1, screen s, color c){
-  int start = min_coor(x0, x1);
-  int end = max_coor(x0, x1);
-  while(start < end){
-    plot(s, c, start, y0);
-    start += 1;
+void horizontal(int startx, int starty, int endx, int endy, screen s, color c){
+  while(startx < endx){
+    plot(s, c, startx, starty);
+    startx += 1;
   }
 }
 
-void vertical(int x0, int y0, int x1, int y1, screen s, color c){
-  int start = min_coor(y0, y1);
-  int end = max_coor(y0,y1);
-  while(start < end){
-    plot(s, c, x0, start);
-    start += 1;
+void vertical(int startx, int starty, int endx, int endy, screen s, color c){
+  while(starty < endy){
+    plot(s, c, startx, starty);
+    starty += 1;
   }
 }
 
