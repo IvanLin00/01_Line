@@ -10,73 +10,69 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
   if(x0 > x1){
     draw_line(x1,y1,x0,y0,s,c);
   }
-  if(x0 == x1){
-    vertical(x0, y0, x1, y1, s, c);
-    return;
-  }
-  int slope = (y1 - y0)/(x1 - x0);
-  if(slope < 0) right(x0, y0, x1, y1, s, c);
-  else if(slope > 0) left(x0, y0, x1, y1, s, c);
-  else horizontal(x0, y0, x1, y1, s, c);
+  int a = y1 - y0;
+  int b = x1 - x0;
+  if(x0 == x1) vertical(x0, y0, x1, y1, s, c);
+  else if (y0 == y1) horizontal(x0, y0, x1, y1, s, c);
+  else if(a <= b && a > 0) oct1(x0, y0, x1, y1, s, c, a, b);
+  else if(a > b) oct2(x0, y0, x1, y1, s, c, a, b);
+  else if(a < -1 * b) oct7(x0, y0, x1, y1, s, c, a, b);
+  else oct8(x0, y0, x1, y1, s, c, a, b);
 }
 
-void right(int startx, int starty, int endx, int endy, screen s, color c){
-  int a = endy - starty;
-  int b = endx - startx;
-  int d = a + 2 * b;
-  if(b < (-1 * a)){
-    while (starty > endy){
-      plot(s, c, startx, starty);
-      if(d > 0){
-        startx++;
-        d += 2 * a;
-      }
-      starty--;
-      d += 2 * b;
+void oct1(int startx, int starty, int endx, int endy, screen s, color c, int a, int b){
+  int d = 2 * a - b;
+  while(startx < endx){
+    plot(s, c, startx, starty);
+    if(d > 0){
+      starty ++;
+      d -= 2 * b;
     }
+    startx ++;
+    d += 2 * a;
   }
-  else{
-    d = 2 * a + b;
-    while(startx < endx){
-      plot(s, c, startx, starty);
-      if(d < 0){
-        starty--;
-        d += 2 * b;
-      }
+}
+
+void oct2(int startx, int starty, int endx, int endy, screen s, color c, int a, int b){
+  int d = 2 * a + b;
+  while(startx <  endx){
+    plot(s, c, startx, starty);
+    if(d < 0){
+      startx += 1;
+      d += 2 * a;
+    }
+    starty += 1;
+    d -= 2 * b;
+  }
+}
+
+void oct7(int startx, int starty, int endx, int endy, screen s, color c, int a, int b){
+  int d = a + 2 * b;
+  while (starty > endy){
+    plot(s, c, startx, starty);
+    if(d > 0){
       startx++;
       d += 2 * a;
     }
+    starty--;
+    d += 2 * b;
   }
 }
 
-void left(int startx, int starty, int endx, int endy, screen s, color c){
-  int a = endy - starty;
-  int b = -1 * (endx - startx);
-  int d = 2 * a - b;
-  if(a > (-1 * b)){ //2nd octant works
-    while(startx <  endx){
-      plot(s, c, startx, starty);
-      if(d < 0){
-        startx += 1;
-        d += 2 * a;
-      }
-      starty += 1;
+void oct8(int startx, int starty, int endx, int endy, screen s, color c, int a, int b){
+  int d = 2 * a + b;
+  while(startx < endx){
+    plot(s, c, startx, starty);
+    if(d < 0){
+      starty--;
       d += 2 * b;
     }
-  }
-  else{//1st octant works 5th doesn't i think
-    d = 2 * a + b;
-    while(startx < endx){
-      plot(s, c, startx, starty);
-      if(d > 0){
-        starty ++;
-        d += 2 * b;
-      }
-      startx ++;
-      d += 2 * a;
-    }
+    startx++;
+    d += 2 * a;
   }
 }
+
+
 
 void horizontal(int startx, int starty, int endx, int endy, screen s, color c){
   while(startx < endx){
@@ -90,14 +86,4 @@ void vertical(int startx, int starty, int endx, int endy, screen s, color c){
     plot(s, c, startx, starty);
     starty += 1;
   }
-}
-
-int max_coor(int i1, int i2){
-  if(i1 < i2) return i2;
-  return i1;
-}
-
-int min_coor(int i1, int i2){
-  if (i1 < i2) return i1;
-  return i2;
 }
